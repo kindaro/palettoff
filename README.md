@@ -1,6 +1,6 @@
 
-paletton
-========
+palettoff
+=========
 
 Exploring paletton.com application.
 
