@@ -1,25 +1,27 @@
-require './lib'
-fs = require 'fs'
+fs        = require 'fs'
 escodegen = require 'escodegen'
+escope    = require 'escope'
+
+require './lib'
 
 syntax = (require 'esprima').parse fs.readFileSync 'app.js'
 
 
 # console.log ((Object.deep_extract e, ['callee', 'object', 'body', 'body', '0', 'expression', 'arguments', '0']) for e in (syntax.body[0].expression.expressions)) .filter (x) -> x?
 
-path_to_base = 'callee.object.body.body.0.expression.callee.name' .split '.'
-path_to_module = 'callee.object.body.body.0' .split '.'
-path_to_name = Array.prototype.concat path_to_module, 'expression.arguments.0.value' .split '.'
-path_to_body = Array.prototype.concat path_to_module, 'expression.arguments.2' .split '.'
-path_to_libs = Array.prototype.concat path_to_module, 'expression.arguments.1' .split '.'
+path_to_base = Object.parseRef '~callee~object~body~body~0~expression~callee~name'
+path_to_module = Object.parseRef '~callee~object~body~body~0'
+path_to_name = Array.prototype.concat path_to_module, Object.parseRef '~expression~arguments~0~value'
+path_to_body = Array.prototype.concat path_to_module, Object.parseRef '~expression~arguments~2'
+path_to_libs = Array.prototype.concat path_to_module, Object.parseRef '~expression~arguments~1'
 
 data = (syntax.body[0]
     .expression.expressions .filter (x) ->
-        (Object.deep_extract x, path_to_base) == 'define') .
+        (Object.deepExtract x, path_to_base) == 'define') .
             map (x) ->
-                name: Object.deep_extract x, path_to_name
-                body: Object.deep_extract x, path_to_body
-                libs: Object.deep_extract x, path_to_libs
+                name: Object.deepExtract x, path_to_name
+                body: Object.deepExtract x, path_to_body
+                libs: Object.deepExtract x, path_to_libs
 
 
 if not fs.existsSync 'modules'
