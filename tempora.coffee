@@ -5,17 +5,22 @@ escope  = require 'escope'
 cj      = require 'circular-json'
 esprima = require 'esprima'
 
+require './lib'
+
 
 syntax  = esprima.parse fs.readFileSync 'fragment.js'
-
-# z.replace syntax
-#     ,
-#         leave:
-#             (n, p) -> if n.type == 'Identifier' and n.name == 'e' then return {
-#                 type: 'Identifier'
-#                 name: 'I_Really_Love_You'
-#             }
-
 scopes = escope.analyze syntax
 
-console.log cj.stringify (escope.analyze syntax), null, 2
+refs = []
+refs.push Object.deepExtract x, Object.parseRef '~identifier' for x in Object.deepExtract scopes
+            , Object.parseRef '~scopes~0~through~0~from~variables~3~references'
+refs.push x for x in Object.deepExtract scopes
+            , Object.parseRef '~scopes~0~through~0~from~variables~3~identifiers'
+
+ref["name"] = 'replaced' for ref in refs
+
+switch process.argv[2]
+    when "scopes"  then console.log cj.stringify (escope.analyze syntax), null, 2
+    when "show"    then console.log cj.stringify (refs), null, 2
+    when "replace" then console.log y.generate syntax
+    else console.log process.argv[2]
