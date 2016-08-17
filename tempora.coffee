@@ -11,11 +11,12 @@ require './lib'
 syntax  = esprima.parse fs.readFileSync 'fragment.js'
 scopes = escope.analyze syntax
 
+target = "~scopes~0~through~0~from~variables~3"
 refs = []
 refs.push Object.deepExtract x, Object.parseRef '~identifier' for x in Object.deepExtract scopes
-            , Object.parseRef '~scopes~0~through~0~from~variables~3~references'
+            , Object.parseRef target + '~references'
 refs.push x for x in Object.deepExtract scopes
-            , Object.parseRef '~scopes~0~through~0~from~variables~3~identifiers'
+            , Object.parseRef target + '~identifiers'
 
 ref["name"] = 'replaced' for ref in refs
 
