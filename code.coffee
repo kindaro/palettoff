@@ -12,15 +12,15 @@ syntax = (require 'esprima').parse fs.readFileSync 'app.js'
 
 refExpressions = Object.parseRef '~body~0~expression~expressions'
 refModule = Object.parseRef '~callee~object~body~body~0'
-refBase = Array.prototype.concat refModule
+refBase = Array::concat refModule
     , Object.parseRef '~expression~callee~name'
-refName = Array.prototype.concat refModule
+refName = Array::concat refModule
     , Object.parseRef '~expression~arguments~0~value'
-refLibs = Array.prototype.concat refModule
+refLibs = Array::concat refModule
     , Object.parseRef '~expression~arguments~1'
-refSyntax = Array.prototype.concat refModule
+refSyntax = Array::concat refModule
     , Object.parseRef '~expression~arguments~2'
-refLib_names = Array.prototype.concat refSyntax
+refLib_names = Array::concat refSyntax
     , Object.parseRef '~params'
 refVariables = Object.parseRef '~scopes~0~variables'
 
@@ -41,7 +41,7 @@ transform = (x) ->
             console.log (v.value for v in x.libs.elements)
             for v, i in x.libs.elements[1..]
                 try
-                    tempora.rename x.scopes, (Array.prototype.concat refVariables, (i + 1)), v.value.replace /\./g, '_'
+                    tempora.rename x.scopes, (Array::concat refVariables, (i + 1)), v.value.replace /\./g, '_'
                 catch e
                     console.log "can't convert " + x.name + ' :: ' + v.value + ' :: ' + e
         x.newSyntax =
